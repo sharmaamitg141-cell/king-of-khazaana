@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -139,76 +140,54 @@
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://gstatic.com";
-        import { getDatabase, ref, onValue } from "https://gstatic.com";
+    <script>
+        function refreshUI() {
+            let store = { ddd: '--', khz: '--' };
+            let oldStore = { ddd: '--', khz: '--' };
+            let logs = [];
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAqMtPoi-fZtSF9KRJF5hmmirIF2InB--k",
-            authDomain: "://firebaseapp.com",
-            databaseURL: "https://firebaseio.com",
-            projectId: "king-of-khazaana",
-            storageBucket: "king-of-khazaana.firebasestorage.app",
-            messagingSenderId: "771682775245",
-            appId: "1:771682775245:web:33fe15872228a55d7b984"
-        };
+            try {
+                store = JSON.parse(localStorage.getItem('khzStore')) || { ddd: '--', khz: '--' };
+                oldStore = JSON.parse(localStorage.getItem('khzOldStore')) || { ddd: '--', khz: '--' };
+                logs = JSON.parse(localStorage.getItem('khzLogs')) || [];
+            } catch(e) {}
 
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
+            document.getElementById('val1Display').innerText = store.ddd;
+            document.getElementById('val2Display').innerText = store.khz;
+            
+            document.getElementById('yestDdd').innerText = oldStore.ddd;
+            document.getElementById('yestKhz').innerText = oldStore.khz;
 
-        function listenToCloudUpdates() {
-            const storeRef = ref(database, 'khzStore');
-            onValue(storeRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    document.getElementById('val1Display').innerText = snapshot.val().ddd;
-                    document.getElementById('val2Display').innerText = snapshot.val().khz;
-                }
-            });
+            const tbody = document.getElementById('historyRows');
+            tbody.innerHTML = '';
 
-            const oldStoreRef = ref(database, 'khzOldStore');
-            onValue(oldStoreRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    document.getElementById('yestDdd').innerText = snapshot.val().ddd;
-                    document.getElementById('yestKhz').innerText = snapshot.val().khz;
-                }
-            });
+            const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+            logs = logs.filter(x => x.timestamp >= thirtyDaysAgo);
+            
+            if(logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-secondary); padding: 18px;">No history found for last 1 month</td></tr>';
+                return;
+            }
 
-            const logsRef = ref(database, 'khzLogs');
-            onValue(logsRef, (snapshot) => {
-                const tbody = document.getElementById('historyRows');
-                tbody.innerHTML = '';
-
-                if (snapshot.exists()) {
-                    let logs = [];
-                    snapshot.forEach((childSnapshot) => {
-                        logs.push(childSnapshot.val());
-                    });
-
-                    const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
-                    logs = logs.filter(x => x.timestamp >= thirtyDaysAgo);
-
-                    if(logs.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-secondary); padding: 18px;">No history found for last 1 month</td></tr>';
-                        return;
-                    }
-
-                    const displayLogs = [...logs].reverse();
-                    displayLogs.forEach(log => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${log.date}</td>
-                            <td style="color: var(--accent); font-weight: bold;">${log.ddd}</td>
-                            <td style="color: #10b981; font-weight: bold;">${log.khz}</td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-secondary); padding: 18px;">No history found for last 1 month</td></tr>';
-                }
+            const displayLogs = [...logs].reverse();
+            displayLogs.forEach(log => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${log.date}</td>
+                    <td style="color: var(--accent); font-weight: bold;">${log.ddd}</td>
+                    <td style="color: #10b981; font-weight: bold;">${log.khz}</td>
+                `;
+                tbody.appendChild(row);
             });
         }
 
-        listenToCloudUpdates();
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'khz_live_trigger' || e.key === 'khzStore' || e.key === 'khzOldStore' || e.key === 'khzLogs') {
+                refreshUI();
+            }
+        });
+
+        refreshUI();
     </script>
 </body>
 </html>
