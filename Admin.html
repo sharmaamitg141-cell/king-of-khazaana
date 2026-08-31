@@ -128,7 +128,6 @@
         th { color: var(--primary); background: #f1f5f9; font-weight: 800; }
         td { font-size: 1.05rem; font-weight: 600; color: #334155; }
     </style>
-    <!-- Standard SDK CDN Libraries -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
 </head>
@@ -196,14 +195,17 @@
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
+        
+        // ⚡ नेटवर्क ब्लॉकेज फ़िक्स मोड: लॉन्ग पोलिंग फ़ोर्स करना ताकि कोई भी नेटवर्क इसे ब्लॉक न कर पाए
+        firebase.database.INTERNAL.forceLongPolling = true;
         const database = firebase.database();
 
         function listenToLiveDatabase() {
-            // रीयल-टाइम कनेक्शन चेक करने के लिए लिसनर
+            // रीयल-टाइम कनेक्शन चेक करने का बैकअप लिसनर
             const connectedRef = database.ref(".info/connected");
             connectedRef.on("value", (snap) => {
                 if (snap.val() === true) {
-                    console.log("Connected to cloud database.");
+                    console.log("Connected Successfully.");
                 } else {
                     document.getElementById('statusCell').innerText = "Connecting Cloud (Retrying)...";
                 }
@@ -252,6 +254,3 @@
 
         document.getElementById('btnProcessSave').addEventListener('click', async function() {
             const val1 = document.getElementById('val1Input').value.trim() || '--';
-            const val2 = document.getElementById('val2Input').value.trim() || '--';
-            
-            const now = new Date();
