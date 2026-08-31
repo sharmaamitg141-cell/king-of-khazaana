@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>King of Khazaana - Admin</title>
+    <style>
+        :root {
+            --primary: #1e3a8a; 
+            --accent: #2563eb;  
+            --header-blue: #1e40af; 
+            --dark: #f0f4f8;    
+            --card-bg: #ffffff; 
+            --text: #0f172a;    
+            --text-secondary: #64748b; 
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--dark);
+            color: var(--text);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 20px;
+            border: 1px solid rgba(37, 99, 235, 0.15);
+            box-shadow: 0 10px 30px rgba(30, 58, 138, 0.08);
+        }
+        h1 {
+            text-align: center;
+            color: #ffffff; 
+            margin-bottom: 20px;
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 800;
+        }
+        .role-section {
+            background: var(--header-blue); 
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.1);
+        }
+        .role-text { font-size: 1.1rem; color: rgba(255, 255, 255, 0.8); }
+        .role-text span { font-weight: bold; color: #ffffff; font-size: 1.3rem; letter-spacing: 2px; }
+        
+        .center-heading {
+            color: var(--primary);
+            font-size: 1.6rem;
+            margin: 25px 0 15px 0;
+            text-transform: uppercase;
+            text-align: center;
+            font-weight: 800;
+            letter-spacing: 2px;
+            display: block;
+            width: 100%;
+        }
+        .display-section { display: flex; flex-direction: column; gap: 18px; }
+        .card {
+            background: #f8fafc;
+            padding: 22px;
+            border-radius: 14px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        .card h2 { font-size: 1.4rem; color: var(--text); margin-bottom: 8px; letter-spacing: 0.5px; font-weight: 700; }
+        .fixed-time { font-size: 1rem; color: var(--text-secondary); font-weight: bold; margin-bottom: 5px; }
+        .input-group { width: 100%; margin-top: 12px; }
+        
+        input[type="text"] {
+            width: 100%;
+            max-width: 160px;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid #cbd5e1;
+            background: #ffffff;
+            color: var(--text);
+            font-size: 1.5rem;
+            text-align: center;
+            font-weight: bold;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.15);
+        }
+        
+        .save-btn {
+            width: 100%;
+            background: var(--accent); 
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: background 0.2s;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+        .save-btn:hover { background: #1d4ed8; }
+
+        .history-container {
+            width: 100%;
+            overflow-x: auto;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            margin-top: 10px;
+        }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 1rem; min-width: 320px; }
+        th, td { padding: 14px 12px; border-bottom: 1px solid #e2e8f0; text-align: center; }
+        th { color: var(--primary); background: #f1f5f9; font-weight: 800; }
+        td { font-size: 1.05rem; font-weight: 600; color: #334155; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- रॉयल ब्लू हेडर हमेशा टॉप पर दिखेगा -->
+        <div style="background: var(--header-blue); width: calc(100% + 50px); margin: -25px -25px 20px -25px; padding: 25px 25px 5px 25px; border-radius: 20px 20px 0 0;">
+            <h1>King of Khazaana</h1>
+            <div class="role-section">
+                <div class="role-text"><span>ADMIN</span></div>
+            </div>
+        </div>
+
+        <!-- एडमिन मेन डैशबोर्ड (अब सीधा लोड होगा) -->
+        <div class="center-heading">RESULT</div>
+        
+        <div class="display-section">
+            <div class="card">
+                <h2>De Dana Dan</h2>
+                <div class="fixed-time">Time: 02:30 PM</div>
+                <div class="input-group">
+                    <input type="text" id="val1Input" placeholder="No.">
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Khazaana</h2>
+                <div class="fixed-time">Time: 05:30 PM</div>
+                <div class="input-group">
+                    <input type="text" id="val2Input" placeholder="No.">
+                </div>
+            </div>
+        </div>
+
+        <button class="save-btn" onclick="processSave()">Save & Update History</button>
+
+        <div class="center-heading">HISTORY</div>
+        
+        <div class="history-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>De Dana Dan</th>
+                        <th>Khazaana</th>
+                    </tr>
+                </thead>
+                <tbody id="historyRows"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function refreshUI() {
+            let logs = [];
+            try {
+                logs = JSON.parse(localStorage.getItem('khzLogs')) || [];
+            } catch(e) {}
+
+            const store = JSON.parse(localStorage.getItem('khzStore')) || { ddd: '--', khz: '--' };
+            document.getElementById('val1Input').value = store.ddd !== '--' ? store.ddd : '';
+            document.getElementById('val2Input').value = store.khz !== '--' ? store.khz : '';
+
+            const tbody = document.getElementById('historyRows');
+            tbody.innerHTML = '';
+
+            const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+            logs = logs.filter(x => x.timestamp >= thirtyDaysAgo);
+            
+            if(logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-secondary); padding: 18px;">No history found for last 1 month</td></tr>';
+                return;
+            }
+
+            const displayLogs = [...logs].reverse();
+            displayLogs.forEach(log => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${log.date}</td>
+                    <td style="color: var(--accent); font-weight: bold;">${log.ddd}</td>
+                    <td style="color: #10b981; font-weight: bold;">${log.khz}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function processSave() {
+            const val1 = document.getElementById('val1Input').value.trim() || '--';
+            const val2 = document.getElementById('val2Input').value.trim() || '--';
+            
+            const now = new Date();
+            const pureDateStr = now.toLocaleDateString('en-GB'); 
+            const todayTimestamp = now.getTime();
+
+            let currentLogs = [];
+            try {
+                currentLogs = JSON.parse(localStorage.getItem('khzLogs')) || [];
+            } catch(e) {}
+            
+            currentLogs = currentLogs.filter(x => x.date !== pureDateStr);
+
+            currentLogs.push({
+                date: pureDateStr,
+                ddd: val1,
+                khz: val2,
+                timestamp: todayTimestamp
+            });
+
+            const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+            currentLogs = currentLogs.filter(x => x.timestamp >= thirtyDaysAgo);
+
+            const prevStore = JSON.parse(localStorage.getItem('khzStore')) || { ddd: '--', khz: '--' };
+
+            try {
+                localStorage.setItem('khzStore', JSON.stringify({ ddd: val1, khz: val2 }));
+                localStorage.setItem('khzOldStore', JSON.stringify({ ddd: prevStore.ddd, khz: prevStore.khz })); 
+                localStorage.setItem('khzLogs', JSON.stringify(currentLogs));
+                localStorage.setItem('khz_live_trigger', Date.now());
+            } catch(e) {}
+
+            alert("Data Saved Successfully!");
+            refreshUI();
+        }
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'khz_live_trigger' || e.key === 'khzStore' || e.key === 'khzLogs') {
+                refreshUI();
+            }
+        });
+
+        // पेज लोड होते ही डेटा रेंडर करें
+        refreshUI();
+    </script>
+</body>
+</html>
