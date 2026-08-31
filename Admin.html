@@ -128,7 +128,7 @@
         th { color: var(--primary); background: #f1f5f9; font-weight: 800; }
         td { font-size: 1.05rem; font-weight: 600; color: #334155; }
     </style>
-    <!-- Firebase Standard Core Libraries (CORS समस्या से सुरक्षित) -->
+    <!-- Firebase Standard Core Libraries (CORS समस्या से 100% सुरक्षित) -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
 </head>
@@ -183,7 +183,6 @@
     </div>
 
     <script>
-        // बुलेटप्रूफ Firebase कॉन्फ़िगरेशन पाथ
         const firebaseConfig = {
             apiKey: "AIzaSyAqMtPoi-fZtSF9KRJF5hmmirIF2InB--k",
             authDomain: "://firebaseapp.com",
@@ -194,23 +193,19 @@
             appId: "1:771682775245:web:33fe15872228a55d7b984"
         };
 
-        // इनिशियलाइज़ेशन चेक
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
         const database = firebase.database();
 
         function listenToLiveDatabase() {
-            const logsRef = database.ref('khzLogs');
-            logsRef.on('value', (snapshot) => {
+            database.ref('khzLogs').on('value', (snapshot) => {
                 const tbody = document.getElementById('historyRows');
                 tbody.innerHTML = '';
 
                 if (snapshot.exists()) {
                     let logs = [];
-                    snapshot.forEach((childSnapshot) => {
-                        logs.push(childSnapshot.val());
-                    });
+                    snapshot.forEach((childSnapshot) => { logs.push(childSnapshot.val()); });
 
                     const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
                     logs = logs.filter(x => x.timestamp >= thirtyDaysAgo);
@@ -254,4 +249,6 @@
 
             let prevStore = { ddd: '--', khz: '--' };
             const currentSnap = await database.ref('khzStore').once('value');
-            if (currentSnap.exists()) {
+            if (currentSnap.exists()) { prevStore = currentSnap.val(); }
+
+            let logs = [];
