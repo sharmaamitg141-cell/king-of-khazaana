@@ -94,7 +94,6 @@
         th { color: var(--primary); background: #f1f5f9; font-weight: 800; }
         td { font-size: 1.05rem; font-weight: 600; color: #334155; }
     </style>
-    <!-- Firebase Standard Core Libraries -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
 </head>
@@ -158,6 +157,9 @@
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
+        
+        // ⚡ नेटवर्क बायपास मोड व्यूअर के लिए भी सक्रिय
+        firebase.database.INTERNAL.forceLongPolling = true;
         const database = firebase.database();
 
         function listenToCloudUpdates() {
