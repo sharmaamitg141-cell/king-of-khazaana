@@ -132,7 +132,6 @@
 <body>
 
     <div class="container">
-        <!-- रॉयल ब्लू हेडर हमेशा टॉप पर दिखेगा -->
         <div style="background: var(--header-blue); width: calc(100% + 50px); margin: -25px -25px 20px -25px; padding: 25px 25px 5px 25px; border-radius: 20px 20px 0 0;">
             <h1>King of Khazaana</h1>
             <div class="role-section">
@@ -140,7 +139,6 @@
             </div>
         </div>
 
-        <!-- एडमिन मेन डैशबोर्ड (अब सीधा लोड होगा) -->
         <div class="center-heading">RESULT</div>
         
         <div class="display-section">
@@ -161,7 +159,7 @@
             </div>
         </div>
 
-        <button class="save-btn" onclick="processSave()">Save & Update History</button>
+        <button class="save-btn" id="btnProcessSave">Save & Update History</button>
 
         <div class="center-heading">HISTORY</div>
         
@@ -179,41 +177,69 @@
         </div>
     </div>
 
-    <script>
-        function refreshUI() {
-            let logs = [];
-            try {
-                logs = JSON.parse(localStorage.getItem('khzLogs')) || [];
-            } catch(e) {}
+    <script type="module">
+        import { initializeApp } from "https://gstatic.com";
+        import { getDatabase, ref, set, onValue, get } from "https://gstatic.com";
 
-            const store = JSON.parse(localStorage.getItem('khzStore')) || { ddd: '--', khz: '--' };
-            document.getElementById('val1Input').value = store.ddd !== '--' ? store.ddd : '';
-            document.getElementById('val2Input').value = store.khz !== '--' ? store.khz : '';
+        const firebaseConfig = {
+            apiKey: "AIzaSyAqMtPoi-fZtSF9KRJF5hmmirIF2InB--k",
+            authDomain: "://firebaseapp.com",
+            databaseURL: "https://firebaseio.com", 
+            projectId: "king-of-khazaana",
+            storageBucket: "king-of-khazaana.firebasestorage.app",
+            messagingSenderId: "771682775245",
+            appId: "1:771682775245:web:33fe15872228a55d7b984"
+        };
 
-            const tbody = document.getElementById('historyRows');
-            tbody.innerHTML = '';
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
 
-            const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
-            logs = logs.filter(x => x.timestamp >= thirtyDaysAgo);
-            
-            if(logs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-secondary); padding: 18px;">No history found for last 1 month</td></tr>';
-                return;
-            }
+        function listenToLiveDatabase() {
+            const logsRef = ref(database, 'khzLogs');
+            onValue(logsRef, (snapshot) => {
+                const tbody = document.getElementById('historyRows');
+                tbody.innerHTML = '';
 
-            const displayLogs = [...logs].reverse();
-            displayLogs.forEach(log => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${log.date}</td>
-                    <td style="color: var(--accent); font-weight: bold;">${log.ddd}</td>
-                    <td style="color: #10b981; font-weight: bold;">${log.khz}</td>
-                `;
-                tbody.appendChild(row);
+                if (snapshot.exists()) {
+                    let logs = [];
+                    snapshot.forEach((childSnapshot) => {
+                        logs.push(childSnapshot.val());
+                    });
+
+                    const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+                    logs = logs.filter(x => x.timestamp >= thirtyDaysAgo);
+
+                    if(logs.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-secondary); padding: 18px;">No history found for last 1 month</td></tr>';
+                        return;
+                    }
+
+                    const displayLogs = [...logs].reverse();
+                    displayLogs.forEach(log => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${log.date}</td>
+                            <td style="color: var(--accent); font-weight: bold;">${log.ddd}</td>
+                            <td style="color: #10b981; font-weight: bold;">${log.khz}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-secondary); padding: 18px;">No history found for last 1 month</td></tr>';
+                }
+            });
+
+            const storeRef = ref(database, 'khzStore');
+            get(storeRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const store = snapshot.val();
+                    document.getElementById('val1Input').value = store.ddd !== '--' ? store.ddd : '';
+                    document.getElementById('val2Input').value = store.khz !== '--' ? store.khz : '';
+                }
             });
         }
 
-        function processSave() {
+        document.getElementById('btnProcessSave').addEventListener('click', async function() {
             const val1 = document.getElementById('val1Input').value.trim() || '--';
             const val2 = document.getElementById('val2Input').value.trim() || '--';
             
@@ -221,44 +247,14 @@
             const pureDateStr = now.toLocaleDateString('en-GB'); 
             const todayTimestamp = now.getTime();
 
-            let currentLogs = [];
-            try {
-                currentLogs = JSON.parse(localStorage.getItem('khzLogs')) || [];
-            } catch(e) {}
-            
-            currentLogs = currentLogs.filter(x => x.date !== pureDateStr);
-
-            currentLogs.push({
-                date: pureDateStr,
-                ddd: val1,
-                khz: val2,
-                timestamp: todayTimestamp
-            });
-
-            const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
-            currentLogs = currentLogs.filter(x => x.timestamp >= thirtyDaysAgo);
-
-            const prevStore = JSON.parse(localStorage.getItem('khzStore')) || { ddd: '--', khz: '--' };
-
-            try {
-                localStorage.setItem('khzStore', JSON.stringify({ ddd: val1, khz: val2 }));
-                localStorage.setItem('khzOldStore', JSON.stringify({ ddd: prevStore.ddd, khz: prevStore.khz })); 
-                localStorage.setItem('khzLogs', JSON.stringify(currentLogs));
-                localStorage.setItem('khz_live_trigger', Date.now());
-            } catch(e) {}
-
-            alert("Data Saved Successfully!");
-            refreshUI();
-        }
-
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'khz_live_trigger' || e.key === 'khzStore' || e.key === 'khzLogs') {
-                refreshUI();
+            let prevStore = { ddd: '--', khz: '--' };
+            const currentSnap = await get(ref(database, 'khzStore'));
+            if (currentSnap.exists()) {
+                prevStore = currentSnap.val();
             }
-        });
 
-        // पेज लोड होते ही डेटा रेंडर करें
-        refreshUI();
-    </script>
-</body>
-</html>
+            let logs = [];
+            const logsSnap = await get(ref(database, 'khzLogs'));
+            if (logsSnap.exists()) {
+                logsSnap.forEach((child) => {
+                    if (child.val().date !== pureDateStr) {
