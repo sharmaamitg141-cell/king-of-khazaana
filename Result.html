@@ -181,9 +181,7 @@
 
                 if (snapshot.exists()) {
                     let logs = [];
-                    snapshot.forEach((childSnapshot) => {
-                        logs.push(childSnapshot.val());
-                    });
+                    snapshot.forEach((childSnapshot) => { logs.push(childSnapshot.val()); });
 
                     const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
                     logs = logs.filter(x => x.timestamp >= thirtyDaysAgo);
