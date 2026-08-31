@@ -128,7 +128,7 @@
         th { color: var(--primary); background: #f1f5f9; font-weight: 800; }
         td { font-size: 1.05rem; font-weight: 600; color: #334155; }
     </style>
-    <!-- Firebase Standard Core Libraries (CORS समस्या से 100% सुरक्षित) -->
+    <!-- Standard SDK CDN Libraries -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
 </head>
@@ -176,7 +176,7 @@
                     </tr>
                 </thead>
                 <tbody id="historyRows">
-                    <tr><td colspan="3" style="text-align:center; padding:15px; color:var(--text-secondary);">Connecting Cloud...</td></tr>
+                    <tr><td colspan="3" style="text-align:center; padding:15px; color:var(--text-secondary);" id="statusCell">Connecting Cloud...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -199,7 +199,18 @@
         const database = firebase.database();
 
         function listenToLiveDatabase() {
-            database.ref('khzLogs').on('value', (snapshot) => {
+            // रीयल-टाइम कनेक्शन चेक करने के लिए लिसनर
+            const connectedRef = database.ref(".info/connected");
+            connectedRef.on("value", (snap) => {
+                if (snap.val() === true) {
+                    console.log("Connected to cloud database.");
+                } else {
+                    document.getElementById('statusCell').innerText = "Connecting Cloud (Retrying)...";
+                }
+            });
+
+            const logsRef = database.ref('khzLogs');
+            logsRef.on('value', (snapshot) => {
                 const tbody = document.getElementById('historyRows');
                 tbody.innerHTML = '';
 
@@ -244,11 +255,3 @@
             const val2 = document.getElementById('val2Input').value.trim() || '--';
             
             const now = new Date();
-            const pureDateStr = now.toLocaleDateString('en-GB'); 
-            const todayTimestamp = now.getTime();
-
-            let prevStore = { ddd: '--', khz: '--' };
-            const currentSnap = await database.ref('khzStore').once('value');
-            if (currentSnap.exists()) { prevStore = currentSnap.val(); }
-
-            let logs = [];
